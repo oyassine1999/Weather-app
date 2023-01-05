@@ -1,94 +1,92 @@
-h1 {
-    text-align: center;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+/* Add some basic styling to the page */
+body {
+    font-family: sans-serif;
 }
 
+h1 {
+    text-align: center;
+}
 
-.forecast-cards-container {
+/* Style the search bar */
+#search-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+}
+
+#search-bar label {
+    margin-right: 10px;
+}
+
+/* Style the current weather container */
+#current-weather-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px 0;
+}
+
+#current-weather-container h2 {
+    margin: 0 0 10px;
+}
+
+#current-weather-container img {
+    width: 100px;
+    height: 100px;
+}
+
+/* Style the forecast container */
+#forecast-container {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
+    margin: 20px 0;
 }
 
-.forecast-card {
-    width: 300px;
-    height: 400px;
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-    margin: 20px;
+#forecast-container li {
+    width: 30%;
+    /* adjust this value to your desired width */
+    text-align: center;
+}
+
+#forecast-container img {
+    width: 50px;
+    height: 50px;
+}
+
+/* Style the search history container */
+#history-container {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    flex-wrap: wrap;
     justify-content: space-between;
-    padding: 20px;
-    animation: fadein 2s;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    transition: transform 0.5s ease-in-out;
-    transform: scale(1);
+    margin: 20px 0;
 }
 
-.forecast-card:hover {
-    transform: scale(1.1);
+#history-container li {
+    width: 30%;
+    /* adjust this value to your desired width */
+    text-align: center;
 }
 
-.forecast-card p {
-    margin: 0;
+ul {
+    display: block;
+    margin: auto;
 }
 
-@keyframes fadein {
+li {
+    animation: appear-from-thin-air 0.5s ease-in;
+    text-align: center;
+}
+
+@keyframes appear-from-thin-air {
     from {
+        transform: translateY(-100%);
         opacity: 0;
     }
 
     to {
+        transform: translateY(0);
         opacity: 1;
     }
-}
-
-.current-weather-container {
-    background-color: #f1f1f1;
-    border-radius: 10px;
-    padding: 20px;
-    width: 100%;
-    margin: 0 auto;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-    /* add a reflection */
-    background: linear-gradient(to bottom, #f1f1f1, #ffffff 60%, #f1f1f1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-div {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-label {
-    color: #333;
-    font-size: 18px;
-}
-
-input[type="text"] {
-    width: 300px;
-    height: 40px;
-    border: 2px solid #333;
-    border-radius: 4px;
-    padding: 0 10px;
-    font-size: 18px;
-    color: #333;
-}
-
-button {
-    width: 120px;
-    height: 40px;
-    background-color: #333;
-    color: #fff;
-    font-size: 18px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
 }
