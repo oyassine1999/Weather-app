@@ -8,20 +8,9 @@ const forecastContainer = document.createElement('div');
 forecastContainer.id = 'forecast-container';
 document.body.appendChild(forecastContainer);
 
-// Create a container element for the city history list
-const cityHistoryContainer = document.createElement('ul');
-cityHistoryContainer.id = 'city-history-container';
-document.body.appendChild(cityHistoryContainer);
-
 searchButton.addEventListener('click', () => {
   // Get the city name from the input field
   const city = cityInput.value;
-
-  // Clear the city history list
-  const cityHistoryContainer = document.querySelector('#city-history-container');
-  while (cityHistoryContainer.firstChild) {
-    cityHistoryContainer.removeChild(cityHistoryContainer.firstChild);
-  }
 
   const apiEndpoint = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&appid=${apiKey}`;
 
@@ -61,8 +50,15 @@ searchButton.addEventListener('click', () => {
       windElement.textContent = `Wind: ${currentWindSpeed} mph`;
       document.body.appendChild(windElement);
       const humidityElement = document.createElement('p');
-      humidityElement.textContent = `Humidity: ${current}`;
-          
+      humidityElement.textContent = `Humidity: ${currentHumidity}%`;
+      document.body.appendChild(humidityElement);
+      const timeZoneElement = document.createElement('p');
+      timeZoneElement.textContent = `Time Zone: ${currentTimeZone}`;
+      document.body.appendChild(timeZoneElement);
+
+      // Get the forecast data for the next 5 days
+      const forecastData = data.list.slice(1, 6);
+
 // Clear the forecast list
 const forecastContainer = document.querySelector('#forecast-container');
 while (forecastContainer.firstChild) {
@@ -94,22 +90,17 @@ forecastData.forEach(day => {
   const forecastTemperatureElement = document.createElement('p');
   forecastTemperatureElement.textContent = `Temperature: ${forecastTemperature} C`;
   forecastItem.appendChild(forecastTemperatureElement);
+
   const forecastWindElement = document.createElement('p');
   forecastWindElement.textContent = `Wind: ${forecastWindSpeed} mph`;
   forecastItem.appendChild(forecastWindElement);
+
   const forecastHumidityElement = document.createElement('p');
   forecastHumidityElement.textContent = `Humidity: ${forecastHumidity}%`;
   forecastItem.appendChild(forecastHumidityElement);
 
-  // Add the forecast item to the forecast list
   forecastList.appendChild(forecastItem);
 });
-
-// Add the forecast list to the forecast container
 forecastContainer.appendChild(forecastList);
-
-// Add the city to the city history list
-const cityHistoryItem = document.createElement('li');
-cityHistoryItem.textContent = city;
-cityHistoryContainer.appendChild(cityHistoryItem);
+});
 });
