@@ -91,8 +91,8 @@ body {
 }
 #city-history-list li {
     display: inline-block;
-    width: 200px;
-    height: 200px;
+    width: 100px;
+    height: 100px;
     background-color: white;
     border: 1px solid black;
     margin: 0 auto;
@@ -100,7 +100,7 @@ body {
     transition: box-shadow 0.3s, transform 0.3s;
     text-align: center;
     border-radius: 10px;
-    line-height: 200px;
+    line-height: 100px;
     font-weight: bold;
     font-size: 1.2em;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
