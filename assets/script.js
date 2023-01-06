@@ -9,18 +9,59 @@ forecastContainer.id = 'forecast-container';
 document.body.appendChild(forecastContainer);
 
 // Create an array to hold the city names and a function to add new city names to the array
-const cityHistory = [];
+let cityHistory = [];
 
 function addCityToHistory(city) {
-  // Only add the city if it's not already in the array
-  if (!cityHistory.includes(city)) {
-    cityHistory.unshift(city);
+  // Remove the city from the array if it is already in the array
+  if (cityHistory.includes(city)) {
+    cityHistory = cityHistory.filter(item => item !== city);
   }
 
-  // Keep the array limited to a maximum of 5 items
-  if (cityHistory.length > 5) {
+  // If the array is already at maximum capacity, remove the oldest item
+  if (cityHistory.length >= 5) {
     cityHistory.pop();
   }
+
+  // Add the city to the beginning of the array
+  cityHistory.unshift(city);
+
+  // Update the city history display
+  updateCityHistoryList();
+}
+
+function updateCityHistoryList() {
+  // Get the city history list element
+  const cityHistoryList = document.querySelector('#city-history-list');
+
+  // Clear the list before adding new items
+  cityHistoryList.innerHTML = '';
+
+  // Loop through the cityHistory array
+  for (let i = 0; i < cityHistory.length; i++) {
+    // Create a new list item for the city
+    const cityListItem = document.createElement('li');
+    cityListItem.textContent = cityHistory[i];
+
+    // Add a click event listener to the list item
+    cityListItem.addEventListener('click', () => {
+      // Update the value of the city input field
+      cityInput.value = cityHistory[i];
+
+      // Perform the search
+      searchButton.click();
+    });
+
+    cityHistoryList.appendChild(cityListItem);
+  }
+}
+
+// Check if there is stored data in localStorage
+if (localStorage.getItem('cityHistory')) {
+  // If there is, retrieve it and assign it to the cityHistory array
+  cityHistory = JSON.parse(localStorage.getItem('cityHistory'));
+
+  // Update the city history display
+  updateCityHistoryList();
 }
 
 // Add a click event listener to the search button
@@ -34,6 +75,9 @@ searchButton.addEventListener('click', () => {
   // Perform the search and display the new weather data
   const city = cityInput.value;
   addCityToHistory(city);
+
+  // Store the updated cityHistory array in localStorage
+  localStorage.setItem('cityHistory', JSON.stringify(cityHistory));
 
   const apiEndpoint = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&appid=${apiKey}`;
   fetch(apiEndpoint)
@@ -59,92 +103,79 @@ searchButton.addEventListener('click', () => {
       cityNameElement.textContent = `${city}`;
       container.appendChild(cityNameElement);
 
-      const dateElement = document.createElement('h3');
-      const today = new Date();
-      const month = today.getMonth();
-      const date = today.getDate();
-      const year = today.getFullYear();
-      dateElement.textContent = `${month}/${date}/${year}`;
-container.appendChild(dateElement);
 
-      const iconElement = document.createElement('img');
-      iconElement.src = iconUrl;
-      container.appendChild(iconElement);
+  const dateElement = document.createElement('h3');
+  const today = new Date();
+  const month = today.getMonth();
+  const date = today.getDate();
+  const year = today.getFullYear();
+  dateElement.textContent = `${month}/${date}/${year}`;
+  container.appendChild(dateElement);
 
-      const temperatureElement = document.createElement('p');
-      temperatureElement.textContent = `Temperature: ${currentTemperature} C`;
-      container.appendChild(temperatureElement);
 
-      // Add the rest of the current weather data to the container element
-      const windElement = document.createElement('p');
-      windElement.textContent = `Wind: ${currentWindSpeed} mph`;
-      container.appendChild(windElement);
-      const humidityElement = document.createElement('p');
-      humidityElement.textContent = `Humidity: ${currentHumidity}%`;
-      container.appendChild(humidityElement);
-      const timeZoneElement = document.createElement('p');
-      timeZoneElement.textContent = `Time Zone: ${currentTimeZone}`;
-      container.appendChild(timeZoneElement);
+  const iconElement = document.createElement('img');
+  iconElement.src = iconUrl;
+  container.appendChild(iconElement);
 
-      // Get the forecast data for the next 5 days
-      const forecastData = data.list.slice(1, 6);
+  const temperatureElement = document.createElement('p');
+  temperatureElement.textContent = `Temperature: ${currentTemperature} C`;
+  container.appendChild(temperatureElement);
 
-      // Clear the forecast list
-      while (forecastContainer.firstChild) {
-        forecastContainer.removeChild(forecastContainer.firstChild);
-      }
+  // Add the rest of the current weather data to the container element
+  const windElement = document.createElement('p');
+  windElement.textContent = `Wind: ${currentWindSpeed} mph`;
+  container.appendChild(windElement);
+  const humidityElement = document.createElement('p');
+  humidityElement.textContent = `Humidity: ${currentHumidity}%`;
+  container.appendChild(humidityElement);
+  const timeZoneElement = document.createElement('p');
+  timeZoneElement.textContent = `Time Zone: ${currentTimeZone}`;
+  container.appendChild(timeZoneElement);
 
-      // Add a forecast item for each day
-      const forecastList = document.createElement('ul');
-      forecastData.forEach(day => {
-        const forecastItem = document.createElement('li');
+  // Get the forecast data for the next 5 days
+  const forecastData = data.list.slice(1, 6);
 
-        // Extract the forecast data for the day
-        const forecastDate = day.dt_txt;
-        const forecastIconCode = day.weather[0].icon;
-        const forecastIconUrl = `http://openweathermap.org/img/wn/${forecastIconCode}@2x.png`;
-        const forecastTemperature = day.main.temp;
-        const forecastWindSpeed = day.wind.speed;
-        const forecastHumidity = day.main.humidity;
-
-        // Add the forecast data to the list item
-        forecastItem.innerHTML = `
-          <div>${forecastDate}</div>
-          <img src="${forecastIconUrl}"/>
-          <div>Temperature: ${forecastTemperature} C</div>
-          <div>Wind: ${forecastWindSpeed} mph</div>
-          <div>Humidity: ${forecastHumidity}%</div>
-        `;
-
-        // Append the list item to the forecast list
-        forecastList.appendChild(forecastItem);
-      });
-
-      // Append the forecast list to the forecast container
-      forecastContainer.appendChild(forecastList);
-    });
-
-  // Update the history list
-  const historyList = document.querySelector('#city-history-list');
-  while (historyList.firstChild) {
-    historyList.removeChild(historyList.firstChild);
+  // Clear the forecast list
+  while (forecastContainer.firstChild) {
+    forecastContainer.removeChild(forecastContainer.firstChild);
   }
-  cityHistory.forEach(city => {
-    const listItem = document.createElement('li');
-    listItem.textContent = city;
-    historyList.appendChild(listItem);
+
+  // Add a forecast item for each day
+  forecastData.forEach(day => {
+    // Extract the relevant forecast data from the API response
+    const forecastTemperature = day.main.temp;
+    const forecastWindSpeed = day.wind.speed;
+    const forecastHumidity = day.main.humidity;
+    const forecastTime = day.dt_txt;
+    const forecastIconCode = day.weather[0].icon;
+    const forecastIconUrl = `http://openweathermap.org/img/wn/${forecastIconCode}@2x.png`;
+
+    // Create the forecast item element
+    const forecastItem = document.createElement('div');
+    forecastItem.classList.add('forecast-item');
+
+    // Add the forecast data to the forecast item element
+    const forecastTimeElement = document.createElement('p');
+    forecastTimeElement.textContent = forecastTime;
+    forecastItem.appendChild(forecastTimeElement);
+
+    const forecastIconElement = document.createElement('img');
+    forecastIconElement.src = forecastIconUrl;
+    forecastItem.appendChild(forecastIconElement);
+
+    const forecastTemperatureElement = document.createElement('p');
+    forecastTemperatureElement.textContent = `Temperature: ${forecastTemperature} C`;
+    forecastItem.appendChild(forecastTemperatureElement);
+
+    // Add the rest of the forecast data to the forecast item element
+    const forecastWindElement = document.createElement('p');
+    forecastWindElement.textContent = `Wind: ${forecastWindSpeed} mph`;
+    forecastItem.appendChild(forecastWindElement);
+const forecastHumidityElement = document.createElement('p');
+forecastHumidityElement.textContent = `Humidity: ${forecastHumidity}%`;
+forecastItem.appendChild(forecastHumidityElement);
+    // Append the forecast item element to the forecast container element
+    forecastContainer.appendChild(forecastItem);
   });
 });
-
-const historyList = document.querySelector('#city-history-list');
-historyList.addEventListener('click', event => {
-  // Check if the clicked element is a list item
-  if (event.target.tagName === 'LI') {
-    // Get the city name from the list item
-    const city = event.target.textContent;
-
-    // Update the city input field and perform the search
-    cityInput.value = city;
-    searchButton.click();
-  }
 });
