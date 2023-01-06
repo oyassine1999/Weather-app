@@ -3,21 +3,20 @@
 
 <head>
     <title>Weather App</title>
-    <link rel="stylesheet" href="./assets/style.css">
+    <link rel="stylesheet" href="./assets/style.css" />
 </head>
 
 <body>
-    <h1>Weather App</h1>
-
-    <div>
-        <label for="cityInput">Enter a city name:</label>
-        <input type="text" id="city-name">
-        <button id="search-button">Search</button>
-    </div>
-
-    <!-- Create a container element for the forecast data -->
+    <label for="city-name">Enter a city:</label>
+    <input type="text" id="city-name" />
+    <button id="search-button">Search</button>
+    <br />
+    <br />
     <div id="forecast-container"></div>
-
+    <br />
+    <br />
+    <h3>Search History:</h3>
+    <ul id="city-history-list"></ul>
     <script src="./assets/script.js"></script>
 </body>
 

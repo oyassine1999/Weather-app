@@ -3,7 +3,7 @@ const apiKey = 'b19addc5eb8a34a78630929ba78aaf39';
 const cityInput = document.querySelector('#city-name');
 const searchButton = document.querySelector('#search-button');
 
-//Create a container element for the forecast data
+// Create a container element for the forecast data
 const forecastContainer = document.createElement('div');
 forecastContainer.id = 'forecast-container';
 document.body.appendChild(forecastContainer);
@@ -12,9 +12,18 @@ document.body.appendChild(forecastContainer);
 const cityHistory = [];
 
 function addCityToHistory(city) {
-  cityHistory.push(city);
+  // Only add the city if it's not already in the array
+  if (!cityHistory.includes(city)) {
+    cityHistory.unshift(city);
+  }
+
+  // Keep the array limited to a maximum of 5 items
+  if (cityHistory.length > 5) {
+    cityHistory.pop();
+  }
 }
 
+// Add a click event listener to the search button
 searchButton.addEventListener('click', () => {
   // Remove the current weather data from the page
   const container = document.querySelector('#current-weather-container');
@@ -42,7 +51,10 @@ searchButton.addEventListener('click', () => {
       const container = document.createElement('div');
       container.id = 'current-weather-container';
 
-      // Create the DOM elements for the current weather data
+      // Append the container element to the body of the page
+      document.body.insertBefore(container, forecastContainer);
+
+      // Add the current weather data to the container element
       const cityNameElement = document.createElement('h2');
       cityNameElement.textContent = `${city}`;
       container.appendChild(cityNameElement);
@@ -53,7 +65,7 @@ searchButton.addEventListener('click', () => {
       const date = today.getDate();
       const year = today.getFullYear();
       dateElement.textContent = `${month}/${date}/${year}`;
-      container.appendChild(dateElement);
+container.appendChild(dateElement);
 
       const iconElement = document.createElement('img');
       iconElement.src = iconUrl;
@@ -62,6 +74,8 @@ searchButton.addEventListener('click', () => {
       const temperatureElement = document.createElement('p');
       temperatureElement.textContent = `Temperature: ${currentTemperature} C`;
       container.appendChild(temperatureElement);
+
+      // Add the rest of the current weather data to the container element
       const windElement = document.createElement('p');
       windElement.textContent = `Wind: ${currentWindSpeed} mph`;
       container.appendChild(windElement);
@@ -72,14 +86,10 @@ searchButton.addEventListener('click', () => {
       timeZoneElement.textContent = `Time Zone: ${currentTimeZone}`;
       container.appendChild(timeZoneElement);
 
-      // Append the container element to the body of the page
-      document.body.appendChild(container);
-
       // Get the forecast data for the next 5 days
       const forecastData = data.list.slice(1, 6);
 
       // Clear the forecast list
-      const forecastContainer = document.querySelector('#forecast-container');
       while (forecastContainer.firstChild) {
         forecastContainer.removeChild(forecastContainer.firstChild);
       }
@@ -97,43 +107,44 @@ searchButton.addEventListener('click', () => {
         const forecastWindSpeed = day.wind.speed;
         const forecastHumidity = day.main.humidity;
 
-        // Create the DOM elements for the forecast data
-        const forecastDateElement = document.createElement('h4');
-        forecastDateElement.textContent = forecastDate;
-        forecastItem.appendChild(forecastDateElement);
+        // Add the forecast data to the list item
+        forecastItem.innerHTML = `
+          <div>${forecastDate}</div>
+          <img src="${forecastIconUrl}"/>
+          <div>Temperature: ${forecastTemperature} C</div>
+          <div>Wind: ${forecastWindSpeed} mph</div>
+          <div>Humidity: ${forecastHumidity}%</div>
+        `;
 
-        const forecastIconElement = document.createElement('img');
-        forecastIconElement.src = forecastIconUrl;
-        forecastItem.appendChild(forecastIconElement);
-
-        const forecastTemperatureElement = document.createElement('p');
-        forecastTemperatureElement.textContent = `Temperature: ${forecastTemperature} C`;
-        forecastItem.appendChild(forecastTemperatureElement);
-
-        const forecastWindElement = document.createElement('p');
-        forecastWindElement.textContent = `Wind: ${forecastWindSpeed} mph`;
-        forecastItem.appendChild(forecastWindElement);
-
-        const forecastHumidityElement = document.createElement('p');
-        forecastHumidityElement.textContent = `Humidity: ${forecastHumidity}%`;
-        forecastItem.appendChild(forecastHumidityElement);
-
+        // Append the list item to the forecast list
         forecastList.appendChild(forecastItem);
       });
+
+      // Append the forecast list to the forecast container
       forecastContainer.appendChild(forecastList);
-
-      // Create a div element to hold the city history list
-      const historyContainer = document.createElement('div');
-      historyContainer.id = 'history-container';
-      document.body.appendChild(historyContainer);
-
-      // Create the city history list
-      const cityHistoryList = document.createElement('ul');
-      cityHistory.forEach(city => {
-        const cityHistoryItem = document.createElement('li');
-        cityHistoryItem.textContent = city;
-        cityHistoryList.appendChild(cityHistoryItem);
-      });
-      historyContainer.appendChild(cityHistoryList);
     });
+
+  // Update the history list
+  const historyList = document.querySelector('#city-history-list');
+  while (historyList.firstChild) {
+    historyList.removeChild(historyList.firstChild);
+  }
+  cityHistory.forEach(city => {
+    const listItem = document.createElement('li');
+    listItem.textContent = city;
+    historyList.appendChild(listItem);
+  });
+});
+
+const historyList = document.querySelector('#city-history-list');
+historyList.addEventListener('click', event => {
+  // Check if the clicked element is a list item
+  if (event.target.tagName === 'LI') {
+    // Get the city name from the list item
+    const city = event.target.textContent;
+
+    // Update the city input field and perform the search
+    cityInput.value = city;
+    searchButton.click();
+  }
 });
